@@ -6,13 +6,17 @@ import { redirect } from 'next/navigation'
 // Import Server Action Logout
 import { signout } from '../auth/actions' 
 
+// app/dashboard/page.tsx
+// ...
 export default async function Dashboard() {
-  const supabase = createClient()
+  // UBAH: Tambahkan 'await' di sini
+  const supabase = await createClient() 
 
   // Ambil sesi pengguna dari cookies (dilakukan di server)
   const { 
     data: { user },
   } = await supabase.auth.getUser()
+// ...
 
   // Jika tidak ada user, redirect ke halaman autentikasi
   if (!user) {

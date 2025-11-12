@@ -7,14 +7,11 @@ import { redirect } from 'next/navigation'
 // Import Server Actions
 import { signin, signup } from './actions' 
 
-export default async function AuthPage({
-  searchParams,
-}: {
-  searchParams: { message: string }
-}) {
-  const supabase = createClient()
+export default async function AuthPage({ 
+// ...
+  // UBAH: Tambahkan 'await' di sini
+  const supabase = await createClient() 
   
-  // Logika: Cek apakah user sudah login, jika ya, redirect ke dashboard
   const {
     data: { user },
   } = await supabase.auth.getUser()
