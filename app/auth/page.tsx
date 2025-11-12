@@ -1,106 +1,193 @@
 // app/auth/page.tsx
-import { signin, signup } from './actions'
+
 import Link from 'next/link'
+import { headers } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+
+// Import Server Actions
+// PASTIKAN SEMUA FUNGSI SUDAH DIEKSPOR DARI actions.ts!
+import { signin, signup } from './actions' 
 
 export default function AuthPage({
   searchParams,
 }: {
   searchParams: { message: string }
 }) {
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-900">Sign In / Sign Up</h2>
-        
-        {searchParams.message && (
-          <p className="mt-4 p-3 rounded-md text-sm text-center bg-yellow-100 text-yellow-700">
-            {searchParams.message}
-          </p>
-        )}
+  const supabase = createClient()
+  
+  // =======================================================
+  // Logika: Cek apakah user sudah login, jika ya, redirect ke dashboard
+  // =======================================================
+  // Karena ini Server Component, kita bisa langsung cek status auth
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-        {/* --- Login Form --- */}
-        <form className="space-y-4" action={signin}>
-          <h3 className="text-xl font-semibold">Sign In</h3>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <button 
-            type="submit" 
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Sign In
-          </button>
-        </form>
+  if (user) {
+    redirect('/dashboard')
+  }
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">OR</span>
-          </div>
-        </div>
 
-        {/* --- Signup Form (Sederhana) --- */}
-        <form className="space-y-4" action={signup}>
-          <h3 className="text-xl font-semibold">Sign Up</h3>
-          <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name (for profile)</label>
-            <input
-              id="firstName"
-              name="firstName"
-              type="text"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              placeholder="Your Name"
-            />
-          </div>
-          <div>
-            <label htmlFor="signupEmail" className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              id="signupEmail"
-              name="email"
-              type="email"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              placeholder="newuser@example.com"
-            />
-          </div>
-          <div>
-            <label htmlFor="signupPassword" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              id="signupPassword"
-              name="password"
-              type="password"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <button 
-            type="submit" 
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
-          >
-            Sign Up
-          </button>
-        </form>
+  // =======================================================
+  // Komponen Form Login
+  // =======================================================
+  const SignInForm = () => (
+    <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground" action={signin}>
+      <label className="text-md" htmlFor="email">
+        Email
+      </label>
+      <input
+        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        required
+      />
+      <label className="text-md" htmlFor="password">
+        Password
+      </label>
+      <input
+        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+        type="password"
+        name="password"
+        placeholder="••••••••"
+        required
+      />
+      <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
+        Sign In
+      </button>
+      
+      {/* Tombol untuk beralih ke Sign Up */}
+      <div className="text-center mt-4">
+        Belum punya akun?{' '}
+        <button
+          type="button"
+          onClick={() => window.location.hash = '#signup'}
+          className="text-green-500 hover:underline"
+        >
+          Daftar Sekarang
+        </button>
       </div>
+    </form>
+  )
+
+
+  // =======================================================
+  // Komponen Form Sign Up
+  // =======================================================
+  const SignUpForm = () => (
+    <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground" action={signup}>
+      <label className="text-md" htmlFor="firstName">
+        Nama Depan
+      </label>
+      <input
+        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+        name="firstName"
+        type="text"
+        placeholder="John"
+        required
+      />
+      <label className="text-md" htmlFor="email">
+        Email
+      </label>
+      <input
+        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        required
+      />
+      <label className="text-md" htmlFor="password">
+        Password
+      </label>
+      <input
+        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+        type="password"
+        name="password"
+        placeholder="••••••••"
+        required
+      />
+      <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
+        Sign Up
+      </button>
+      
+      {/* Tombol untuk beralih ke Login */}
+      <div className="text-center mt-4">
+        Sudah punya akun?{' '}
+        <button
+          type="button"
+          onClick={() => window.location.hash = '#signin'}
+          className="text-green-500 hover:underline"
+        >
+          Masuk
+        </button>
+      </div>
+    </form>
+  )
+  
+  // =======================================================
+  // Main Render Function
+  // =======================================================
+  return (
+    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
+      <Link
+        href="/"
+        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>{' '}
+        Back
+      </Link>
+
+      <div id="signin">
+        <h2 className="text-2xl font-bold mb-4 text-center">Masuk ke Akun Anda</h2>
+        <SignInForm />
+      </div>
+
+      <div id="signup" className="hidden"> 
+        <h2 className="text-2xl font-bold mb-4 text-center">Daftar Akun Baru</h2>
+        <SignUpForm />
+      </div>
+
+      {searchParams.message && (
+        <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+          {searchParams.message}
+        </p>
+      )}
+
+      {/* Script untuk Mengganti Tampilan Form (Client Side) */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            const signInDiv = document.getElementById('signin');
+            const signUpDiv = document.getElementById('signup');
+            const handleHashChange = () => {
+              if (window.location.hash === '#signup') {
+                signInDiv.classList.add('hidden');
+                signUpDiv.classList.remove('hidden');
+              } else {
+                signInDiv.classList.remove('hidden');
+                signUpDiv.classList.add('hidden');
+              }
+            };
+            window.addEventListener('hashchange', handleHashChange);
+            handleHashChange(); // Run on initial load
+          `,
+        }}
+      />
     </div>
   )
 }
