@@ -4,9 +4,9 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 
-// FUNGSI HARUS DIJADIKAN ASYNC DAN MENGGUNAKAN AWAIT
+// FUNGSI INI HARUS ASYNC
 export async function createClient() { 
-  // Menggunakan await untuk memastikan kita mendapatkan objek cookies yang sinkron
+  // FIX: Menggunakan 'await cookies()' untuk mendapatkan objek yang benar
   const cookieStore: ReadonlyRequestCookies = await cookies() 
 
   return createServerClient(
@@ -21,14 +21,14 @@ export async function createClient() {
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // Ini akan menangani kasus di mana cookies.set dipanggil di Server Component (yang tidak boleh)
+            // Error ini diabaikan karena cookies.set hanya boleh di Server Action/Route Handler
           }
         },
         remove(name: string, options: any) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // Ini akan menangani kasus di mana cookies.remove dipanggil di Server Component (yang tidak boleh)
+            // Error ini diabaikan karena cookies.remove hanya boleh di Server Action/Route Handler
           }
         },
       },

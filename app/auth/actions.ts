@@ -7,7 +7,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 // =======================================================
-// 1. Fungsi untuk Signup (FIXED: await headers() & await createClient())
+// 1. Fungsi untuk Signup
 // =======================================================
 export async function signup(formData: FormData) {
   const headerList = await headers() // FIX: await headers()
@@ -36,7 +36,7 @@ export async function signup(formData: FormData) {
 }
 
 // =======================================================
-// 2. Fungsi untuk Login (Tambahkan & Fixed: await createClient())
+// 2. Fungsi untuk Login
 // =======================================================
 export async function signin(formData: FormData) {
   const email = formData.get('email') as string
@@ -56,7 +56,7 @@ export async function signin(formData: FormData) {
 }
 
 // =======================================================
-// 3. Fungsi untuk Logout (Tambahkan & Fixed: await createClient())
+// 3. Fungsi untuk Logout
 // =======================================================
 export async function signout() {
   const supabase = await createClient() // FIX: await createClient()
