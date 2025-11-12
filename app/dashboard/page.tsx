@@ -2,21 +2,15 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-
-// Import Server Action Logout
 import { signout } from '../auth/actions' 
 
-// app/dashboard/page.tsx
-// ...
 export default async function Dashboard() {
-  // UBAH: Tambahkan 'await' di sini
-  const supabase = await createClient() 
+  const supabase = await createClient() // FIX: await createClient()
 
   // Ambil sesi pengguna dari cookies (dilakukan di server)
   const { 
     data: { user },
   } = await supabase.auth.getUser()
-// ...
 
   // Jika tidak ada user, redirect ke halaman autentikasi
   if (!user) {
@@ -49,7 +43,6 @@ export default async function Dashboard() {
             <p className="text-gray-700">
               **Dibuat pada:** <code className="bg-gray-100 p-1 rounded text-sm">{new Date(user.created_at).toLocaleDateString()}</code>
             </p>
-            {/* Kamu bisa menampilkan data profil tambahan dari tabel 'profiles' di sini */}
           </div>
         </div>
 

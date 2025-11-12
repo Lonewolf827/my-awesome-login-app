@@ -3,32 +3,30 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-
-// Import Server Actions
 import { signin, signup } from './actions' 
 
-export default async function AuthPage({ 
-// ...
-  // UBAH: Tambahkan 'await' di sini
-  const supabase = await createClient() 
+// FUNGSI UTAMA HARUS ASYNC
+export default async function AuthPage({
+  searchParams,
+}: {
+  searchParams: { message: string }
+}) {
+  const supabase = await createClient() // FIX: await createClient()
   
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser() 
 
   if (user) {
     redirect('/dashboard')
   }
 
-
   // =======================================================
-  // Komponen Form Login
+  // Komponen Form Login (SignInForm)
   // =======================================================
   const SignInForm = () => (
     <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground" action={signin}>
-      <label className="text-md" htmlFor="email">
-        Email
-      </label>
+      <label className="text-md" htmlFor="email">Email</label>
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-6"
         name="email"
@@ -36,9 +34,7 @@ export default async function AuthPage({
         placeholder="you@example.com"
         required
       />
-      <label className="text-md" htmlFor="password">
-        Password
-      </label>
+      <label className="text-md" htmlFor="password">Password</label>
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-6"
         type="password"
@@ -46,16 +42,13 @@ export default async function AuthPage({
         placeholder="••••••••"
         required
       />
-      <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
-        Sign In
-      </button>
+      <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">Sign In</button>
       
-      {/* Tombol untuk beralih ke Sign Up */}
       <div className="text-center mt-4">
         Belum punya akun?{' '}
         <button
           type="button"
-          onClick={() => {window.location.hash = '#signup';}} // Gunakan arrow function
+          onClick={() => {window.location.hash = '#signup';}} 
           className="text-green-500 hover:underline"
         >
           Daftar Sekarang
@@ -66,13 +59,11 @@ export default async function AuthPage({
 
 
   // =======================================================
-  // Komponen Form Sign Up
+  // Komponen Form Sign Up (SignUpForm)
   // =======================================================
   const SignUpForm = () => (
     <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground" action={signup}>
-      <label className="text-md" htmlFor="firstName">
-        Nama Depan
-      </label>
+      <label className="text-md" htmlFor="firstName">Nama Depan</label>
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-6"
         name="firstName"
@@ -80,9 +71,7 @@ export default async function AuthPage({
         placeholder="John"
         required
       />
-      <label className="text-md" htmlFor="email">
-        Email
-      </label>
+      <label className="text-md" htmlFor="email">Email</label>
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-6"
         name="email"
@@ -90,9 +79,7 @@ export default async function AuthPage({
         placeholder="you@example.com"
         required
       />
-      <label className="text-md" htmlFor="password">
-        Password
-      </label>
+      <label className="text-md" htmlFor="password">Password</label>
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-6"
         type="password"
@@ -100,16 +87,13 @@ export default async function AuthPage({
         placeholder="••••••••"
         required
       />
-      <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
-        Sign Up
-      </button>
+      <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">Sign Up</button>
       
-      {/* Tombol untuk beralih ke Login */}
       <div className="text-center mt-4">
         Sudah punya akun?{' '}
         <button
           type="button"
-          onClick={() => {window.location.hash = '#signin';}} // Gunakan arrow function
+          onClick={() => {window.location.hash = '#signin';}}
           className="text-green-500 hover:underline"
         >
           Masuk
@@ -119,7 +103,7 @@ export default async function AuthPage({
   )
   
   // =======================================================
-  // Main Render Function (FULL JSX DI SINI)
+  // Main Render Function
   // =======================================================
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">

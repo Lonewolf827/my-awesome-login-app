@@ -7,16 +7,15 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 // =======================================================
-// 1. Fungsi untuk Signup (FIXED: Penambahan 'await')
+// 1. Fungsi untuk Signup (FIXED: await headers() & await createClient())
 // =======================================================
 export async function signup(formData: FormData) {
-  // SOLUSI WAJIB: Gunakan 'await' di sini
-  const headerList = await headers() // <--- FIX UTAMA
+  const headerList = await headers() // FIX: await headers()
   const origin = headerList.get('origin')
   
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const supabase = createClient()
+  const supabase = await createClient() // FIX: await createClient()
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -37,12 +36,12 @@ export async function signup(formData: FormData) {
 }
 
 // =======================================================
-// 2. Fungsi untuk Login (Tambahkan Kembali!)
+// 2. Fungsi untuk Login (Tambahkan & Fixed: await createClient())
 // =======================================================
 export async function signin(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const supabase = createClient()
+  const supabase = await createClient() // FIX: await createClient()
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -57,10 +56,10 @@ export async function signin(formData: FormData) {
 }
 
 // =======================================================
-// 3. Fungsi untuk Logout (Tambahkan Kembali!)
+// 3. Fungsi untuk Logout (Tambahkan & Fixed: await createClient())
 // =======================================================
 export async function signout() {
-  const supabase = createClient()
+  const supabase = await createClient() // FIX: await createClient()
   await supabase.auth.signOut()
   return redirect('/')
 }
